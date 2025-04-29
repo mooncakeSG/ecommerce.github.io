@@ -1,4 +1,4 @@
-# ShopEase - Modern Ecommerce Website
+# ShopEasy - Modern Ecommerce Website
 
 A responsive and interactive ecommerce website built with HTML5, CSS3, and JavaScript.
 
