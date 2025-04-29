@@ -122,10 +122,10 @@ This website can be easily deployed to GitHub Pages:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is for educational use.
 
 ## Contact
 
-Your Name - your.email@example.com
+Keawin Koesnel - KeawinKoesnel804@gmail.com
 
-Project Link: [https://github.com/yourusername/ecommerce.github.io](https://github.com/yourusername/ecommerce.github.io)
+Project Link: [https://github.com/mooncakesg/ecommerce.github.io](https://github.com/mooncakesg/ecommerce.github.io)
