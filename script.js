@@ -279,19 +279,33 @@ if (authTabs.length > 0) {
     });
 }
 
-// Login form handling
-const loginForm = document.getElementById('login-form');
-if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
+// Password visibility toggle
+document.querySelectorAll('.toggle-password').forEach(button => {
+    button.addEventListener('click', function() {
+        const input = this.previousElementSibling;
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        
+        // Toggle eye icon
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+});
+
+// Sign In form handling
+const signinForm = document.getElementById('signin-form');
+if (signinForm) {
+    signinForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const email = this.querySelector('#login-email').value;
-        const password = this.querySelector('#login-password').value;
+        const email = this.querySelector('#signin-email').value;
+        const password = this.querySelector('#signin-password').value;
         const rememberMe = this.querySelector('#remember-me').checked;
 
         // Here you would typically send the login data to your server
         // For now, we'll just show a success message
-        showNotification('Login successful!');
+        showNotification('Sign in successful!');
         
         // Store user session if remember me is checked
         if (rememberMe) {
@@ -322,12 +336,42 @@ if (registerForm) {
         
         // Here you would typically send the registration data to your server
         // For now, we'll just show a success message
-        showNotification('Registration successful! Please login.');
+        showNotification('Registration successful! Please sign in.');
         
-        // Switch to login tab
-        document.querySelector('[data-tab="login"]').click();
+        // Switch to sign in tab
+        document.querySelector('[data-tab="signin"]').click();
     });
 }
+
+// Social login buttons
+document.querySelectorAll('.social-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const provider = this.classList.contains('google') ? 'Google' : 'Facebook';
+        // Here you would typically implement social login
+        showNotification(`${provider} login coming soon!`);
+    });
+});
+
+// Check user authentication status
+function checkAuth() {
+    const user = localStorage.getItem('user');
+    if (user) {
+        // User is logged in
+        const userData = JSON.parse(user);
+        // Update UI to show logged-in state
+        const navLinks = document.querySelector('.nav-links');
+        const userLink = document.createElement('li');
+        userLink.innerHTML = `
+            <a href="#" class="user-link">
+                <i class="fas fa-user"></i> ${userData.email}
+            </a>
+        `;
+        navLinks.appendChild(userLink);
+    }
+}
+
+// Initialize authentication check
+checkAuth();
 
 // Search functionality
 const searchInput = document.createElement('input');
@@ -362,23 +406,144 @@ searchInput.addEventListener('input', function() {
     });
 });
 
-// Check user authentication status
-function checkAuth() {
-    const user = localStorage.getItem('user');
-    if (user) {
-        // User is logged in
-        const userData = JSON.parse(user);
-        // Update UI to show logged-in state
-        const navLinks = document.querySelector('.nav-links');
-        const userLink = document.createElement('li');
-        userLink.innerHTML = `
-            <a href="#" class="user-link">
-                <i class="fas fa-user"></i> ${userData.email}
-            </a>
-        `;
-        navLinks.appendChild(userLink);
+// Currency conversion functionality
+const API_KEY = '0cf1e41b69417c4d3222e81ed33a1dbf';
+const BASE_CURRENCY = 'ZAR';
+let exchangeRates = {
+    ZAR: 1,
+    USD: 0.053,
+    EUR: 0.049,
+    GBP: 0.042
+};
+
+const currencySymbols = {
+    ZAR: 'R',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+};
+
+// Fetch exchange rates from API
+async function fetchExchangeRates() {
+    try {
+        const response = await fetch(`http://api.exchangerate.host/live?access_key=${API_KEY}&base=${BASE_CURRENCY}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            exchangeRates = {
+                ZAR: 1,
+                USD: data.quotes.USD,
+                EUR: data.quotes.EUR,
+                GBP: data.quotes.GBP
+            };
+            
+            // Update prices with new rates
+            updateAllPrices();
+            
+            // Store rates in localStorage with timestamp
+            localStorage.setItem('exchangeRates', JSON.stringify({
+                rates: exchangeRates,
+                timestamp: Date.now()
+            }));
+        } else {
+            console.error('Failed to fetch exchange rates:', data.error);
+        }
+    } catch (error) {
+        console.error('Error fetching exchange rates:', error);
+        // Use cached rates if available
+        const cachedRates = localStorage.getItem('exchangeRates');
+        if (cachedRates) {
+            const { rates, timestamp } = JSON.parse(cachedRates);
+            // Use cached rates if they're less than 1 hour old
+            if (Date.now() - timestamp < 3600000) {
+                exchangeRates = rates;
+            }
+        }
     }
 }
 
-// Initialize authentication check
-checkAuth(); 
+// Get current currency from localStorage or default to ZAR
+let currentCurrency = localStorage.getItem('currency') || 'ZAR';
+
+// Update currency selector
+const currencySelect = document.getElementById('currency-select');
+if (currencySelect) {
+    currencySelect.value = currentCurrency;
+    
+    currencySelect.addEventListener('change', function() {
+        currentCurrency = this.value;
+        localStorage.setItem('currency', currentCurrency);
+        updateAllPrices();
+    });
+}
+
+// Convert price to selected currency
+function convertPrice(price, fromCurrency = BASE_CURRENCY) {
+    const numericPrice = parseFloat(price.replace(/[^0-9.-]+/g, ''));
+    const convertedPrice = numericPrice * exchangeRates[currentCurrency];
+    return convertedPrice.toFixed(2);
+}
+
+// Format price with currency symbol
+function formatPrice(price) {
+    return `${currencySymbols[currentCurrency]}${price}`;
+}
+
+// Update all prices on the page
+function updateAllPrices() {
+    // Update product prices
+    document.querySelectorAll('.price').forEach(priceElement => {
+        const originalPrice = priceElement.getAttribute('data-original-price') || priceElement.textContent;
+        if (!priceElement.hasAttribute('data-original-price')) {
+            priceElement.setAttribute('data-original-price', originalPrice);
+        }
+        const convertedPrice = convertPrice(originalPrice);
+        priceElement.textContent = formatPrice(convertedPrice);
+    });
+
+    // Update cart summary if on cart page
+    if (window.location.pathname.includes('cart.html')) {
+        updateCartSummary();
+    }
+}
+
+// Initialize prices and fetch exchange rates
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if we have cached rates
+    const cachedRates = localStorage.getItem('exchangeRates');
+    if (cachedRates) {
+        const { rates, timestamp } = JSON.parse(cachedRates);
+        // Use cached rates if they're less than 1 hour old
+        if (Date.now() - timestamp < 3600000) {
+            exchangeRates = rates;
+        } else {
+            // Fetch new rates if cache is old
+            fetchExchangeRates();
+        }
+    } else {
+        // Fetch rates if no cache exists
+        fetchExchangeRates();
+    }
+    
+    updateAllPrices();
+});
+
+// Update cart summary with converted prices
+function updateCartSummary(subtotal) {
+    if (!subtotal) {
+        subtotal = 0;
+        cart.forEach(item => {
+            const price = parseFloat(item.price.replace(/[^0-9.-]+/g, ''));
+            subtotal += price * item.quantity;
+        });
+    }
+
+    const shipping = subtotal > 1000 ? 0 : 100;
+    const tax = subtotal * 0.15;
+    const total = subtotal + shipping + tax;
+
+    document.getElementById('subtotal').textContent = formatPrice(convertPrice(subtotal.toString()));
+    document.getElementById('shipping').textContent = formatPrice(convertPrice(shipping.toString()));
+    document.getElementById('tax').textContent = formatPrice(convertPrice(tax.toString()));
+    document.getElementById('total').textContent = formatPrice(convertPrice(total.toString()));
+} 

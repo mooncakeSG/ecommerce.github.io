@@ -6,9 +6,12 @@ A responsive and interactive ecommerce website built with HTML5, CSS3, and JavaS
 
 - Responsive design that works on all devices
 - Interactive product cards with hover effects
-- Shopping cart functionality
+- Shopping cart functionality with real-time updates
+- Multi-currency support with real-time exchange rates
 - Newsletter subscription form
 - Mobile-friendly navigation
+- User authentication system
+- Product search functionality
 - Modern and clean UI
 
 ## Technologies Used
@@ -16,6 +19,9 @@ A responsive and interactive ecommerce website built with HTML5, CSS3, and JavaS
 - HTML5
 - CSS3
 - JavaScript (ES6+)
+- Font Awesome for icons
+- Exchange Rate API for currency conversion
+- LocalStorage for data persistence
 - No external dependencies
 
 ## Project Structure
@@ -23,14 +29,50 @@ A responsive and interactive ecommerce website built with HTML5, CSS3, and JavaS
 ```
 ecommerce.github.io/
 ├── index.html          # Main HTML file
-├── styles.css          # CSS styles
-├── script.js           # JavaScript functionality
-└── images/             # Image assets
+├── products.html       # Products listing page
+├── cart.html          # Shopping cart page
+├── about.html         # About page
+├── contact.html       # Contact page
+├── login.html         # User authentication page
+├── product-details.html # Product details template
+├── styles.css         # CSS styles
+├── script.js          # JavaScript functionality
+└── images/            # Image assets
     ├── product1.jpg
     ├── product2.jpg
     ├── product3.jpg
     └── hero-bg.jpg
 ```
+
+## Features in Detail
+
+### Multi-Currency Support
+- Real-time currency conversion using Exchange Rate API
+- Supports ZAR, USD, EUR, and GBP
+- Automatic price updates across all pages
+- Currency preference persistence
+- Cached exchange rates for better performance
+
+### Shopping Cart
+- Add/remove products
+- Quantity adjustment
+- Real-time price updates
+- Order summary with subtotal, shipping, and tax
+- Cart persistence using localStorage
+
+### User Authentication
+- Login and registration forms
+- Remember me functionality
+- Password validation
+- Session management
+- Secure form handling
+
+### Product Management
+- Product categories
+- Search functionality
+- Product filtering
+- Detailed product views
+- Related products section
 
 ## Getting Started
 
@@ -40,6 +82,17 @@ ecommerce.github.io/
    ```
 
 2. Open `index.html` in your web browser to view the website locally.
+
+## API Integration
+
+The website uses the Exchange Rate API for currency conversion. To use your own API key:
+
+1. Sign up at [Exchange Rate API](https://exchangerate.host)
+2. Get your API key
+3. Replace the API_KEY constant in `script.js` with your key:
+   ```javascript
+   const API_KEY = 'your-api-key-here';
+   ```
 
 ## Deployment
 
@@ -54,9 +107,10 @@ This website can be easily deployed to GitHub Pages:
 ## Customization
 
 - Replace the placeholder images in the `images` folder with your own product images
-- Modify the product information in `index.html`
+- Modify the product information in `index.html` and `products.html`
 - Adjust colors and styles in `styles.css`
 - Add more interactive features in `script.js`
+- Add more currencies in the currency selector
 
 ## Contributing
 
