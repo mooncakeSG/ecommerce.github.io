@@ -2,44 +2,56 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true
-    },
     email: {
         type: String,
-        required: true,
+        required: [true, 'Email is required'],
         unique: true,
-        trim: true,
-        lowercase: true
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
-        required: function() {
-            return !this.googleId && !this.facebookId;
-        }
+        required: [true, 'Password is required'],
+        minlength: 6
     },
-    googleId: {
+    name: {
         type: String,
-        sparse: true
+        required: [true, 'Name is required'],
+        trim: true
     },
-    facebookId: {
+    role: {
         type: String,
-        sparse: true
+        enum: ['user', 'admin'],
+        default: 'user'
     },
-    resetPasswordToken: String,
-    resetPasswordExpires: Date,
+    address: {
+        street: String,
+        city: String,
+        state: String,
+        postalCode: String,
+        country: String
+    },
+    phoneNumber: {
+        type: String,
+        trim: true
+    },
     isVerified: {
         type: Boolean,
         default: false
     },
     verificationToken: String,
-    verificationTokenExpires: Date,
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
+}, {
+    timestamps: true
 });
 
 // Hash password before saving
@@ -55,29 +67,11 @@ userSchema.pre('save', async function(next) {
     }
 });
 
-// Compare password method
+// Method to compare password for login
 userSchema.methods.comparePassword = async function(candidatePassword) {
-    try {
-        return await bcrypt.compare(candidatePassword, this.password);
-    } catch (error) {
-        throw error;
-    }
+    return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Generate password reset token
-userSchema.methods.generatePasswordResetToken = function() {
-    const token = crypto.randomBytes(20).toString('hex');
-    this.resetPasswordToken = token;
-    this.resetPasswordExpires = Date.now() + 3600000; // 1 hour
-    return token;
-};
+const User = mongoose.model('User', userSchema);
 
-// Generate verification token
-userSchema.methods.generateVerificationToken = function() {
-    const token = crypto.randomBytes(20).toString('hex');
-    this.verificationToken = token;
-    this.verificationTokenExpires = Date.now() + 24 * 3600000; // 24 hours
-    return token;
-};
-
-module.exports = mongoose.model('User', userSchema); 
+module.exports = User; 

@@ -3,28 +3,28 @@
 ## Backend Tasks
 - [x] Set up MongoDB connection
 - [x] Configure environment variables
-- [ ] Create database models
-  - [ ] User model
-  - [ ] Product model
-  - [ ] Order model
-  - [ ] Cart model
-- [ ] Implement authentication routes
-  - [ ] User registration
-  - [ ] User login
-  - [ ] Password reset
-  - [ ] Email verification
-- [ ] Implement product routes
-  - [ ] CRUD operations for products
-  - [ ] Product search and filtering
-  - [ ] Product categories
-- [ ] Implement order management
-  - [ ] Create order
-  - [ ] Update order status
-  - [ ] Order history
-- [ ] Implement cart functionality
-  - [ ] Add to cart
-  - [ ] Update cart
-  - [ ] Remove from cart
+- [x] Create database models
+  - [x] User model
+  - [x] Product model
+  - [x] Order model
+  - [x] Cart model
+- [x] Implement authentication routes
+  - [x] User registration
+  - [x] User login
+  - [x] Password reset
+  - [x] Email verification
+- [x] Implement product routes
+  - [x] CRUD operations for products
+  - [x] Product search and filtering
+  - [x] Product categories
+- [x] Implement order management
+  - [x] Create order
+  - [x] Update order status
+  - [x] Order history
+- [x] Implement cart functionality
+  - [x] Add to cart
+  - [x] Update cart
+  - [x] Remove from cart
 - [ ] Set up payment integration
   - [ ] Stripe integration
   - [ ] Payment processing

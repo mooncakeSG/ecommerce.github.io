@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const User = require('../models/User');
+const authController = require('../controllers/authController');
+const { protect } = require('../middleware/auth');
 
 // Email transporter configuration
 const transporter = nodemailer.createTransport({
@@ -14,6 +16,16 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     }
 });
+
+// Public routes
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.get('/verify-email/:token', authController.verifyEmail);
+router.post('/request-password-reset', authController.requestPasswordReset);
+router.post('/reset-password/:token', authController.resetPassword);
+
+// Protected routes
+router.get('/me', protect, authController.getCurrentUser);
 
 // Sign in route
 router.post('/signin', async (req, res) => {

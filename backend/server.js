@@ -41,11 +41,15 @@ connectToDatabase()
 
 // Import routes
 const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/user');
+const productRoutes = require('./routes/product');
+const orderRoutes = require('./routes/order');
+const cartRoutes = require('./routes/cart');
 
 // Use routes
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
